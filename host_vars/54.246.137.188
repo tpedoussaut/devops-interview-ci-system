@@ -1,0 +1,10 @@
+---
+plugins:
+  - 'github'
+  - 'translation'
+email:
+  smtp_host: 'mail.easymile.com'
+  smtp_ssl: 'true'
+  default_email_suffix: '@easymile.com'
+#jenkins_admin_user: admin
+#jenkins_admin_password: plopijkl

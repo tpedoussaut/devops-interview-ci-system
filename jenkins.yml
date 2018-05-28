@@ -1,0 +1,57 @@
+- name: Jenkins
+  hosts: jenkins
+  become: yes
+  roles:
+    # install jenkins
+    #- { role: jenkins, become: yes, become_user: root }
+  tasks:
+  - name: ensure nginx
+    apt: name=nginx state=present
+    tags: nginx
+  - name: nginx vhost for jenkins
+    template: src=templates/jenkins.conf dest=/etc/nginx/sites-available/default
+    tags: nginx
+    notify:
+    - restart nginx
+
+  - name: ensure jenkins repo key
+    apt_key:
+      url: https://pkg.jenkins.io/debian-stable/jenkins.io.key 
+      state: present
+  - name: ensure jenkins repo
+    apt_repository:
+      repo: deb https://pkg.jenkins.io/debian-stable binary/
+      state: present
+  - name: ensure java8
+    apt: name=openjdk-8-jre-headless state=present
+  - name: ensure jenkins
+    apt: name=jenkins state=present
+  - name: fecth initial pass
+    fetch:
+      src: /var/lib/jenkins/secrets/initialAdminPassword
+      dest: files/initialAdminPassword
+      flat: yes
+    ignore_errors: yes
+  - name: build user
+    user:
+      name: jbuilder
+      shell: /bin/bash
+      generate_ssh_key: yes
+  - name: fecth public key
+    fetch:
+      src: /home/jbuilder/.ssh/id_rsa.pub
+      dest: files/jbuilder.pub
+      flat: yes
+  - name:
+    copy:
+      src: /home/jbuilder/.ssh/id_rsa
+      dest: /var/lib/jenkins/jbuilder.key
+      remote_src: yes
+      owner: jenkins
+      group: jenkins
+      mode: 0600
+
+  handlers:
+  - name: restart nginx
+    service: name=nginx state=restarted
+

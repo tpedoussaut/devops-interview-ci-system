@@ -1,0 +1,26 @@
+- name: Builder
+  hosts: builder
+  become: yes
+  roles:
+  tasks:
+  - name: ensure java8
+    apt: name=openjdk-8-jre-headless state=present
+  - name: ensure docker
+    apt: name=docker.io state=present
+  - name: ensure cargo
+    apt: name=cargo state=present
+  - name: ensure git
+    apt: name=git state=present
+  - name: build user
+    user:
+      name: jbuilder
+      shell: /bin/bash
+      groups: docker
+  - name: jbuilder authorized_keys
+    authorized_key:
+      user: jbuilder
+      key: "{{ lookup('file', 'jbuilder.pub') }}"
+      state: present
+
+  handlers:
+

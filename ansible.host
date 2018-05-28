@@ -1,0 +1,8 @@
+[jenkins]
+54.246.137.188 ansible_ssh_user=ubuntu
+[builder]
+34.241.77.240  ansible_ssh_user=ubuntu
+
+[all:vars]
+ansible_python_interpreter=/usr/bin/python3
+
