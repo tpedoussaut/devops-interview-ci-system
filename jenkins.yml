@@ -2,8 +2,6 @@
   hosts: jenkins
   become: yes
   roles:
-    # install jenkins
-    #- { role: jenkins, become: yes, become_user: root }
   tasks:
   - name: ensure nginx
     apt: name=nginx state=present
@@ -32,6 +30,7 @@
       dest: files/initialAdminPassword
       flat: yes
     ignore_errors: yes
+
   - name: build user
     user:
       name: jbuilder
@@ -42,7 +41,7 @@
       src: /home/jbuilder/.ssh/id_rsa.pub
       dest: files/jbuilder.pub
       flat: yes
-  - name:
+  - name: copy the private key for jenkins consumption
     copy:
       src: /home/jbuilder/.ssh/id_rsa
       dest: /var/lib/jenkins/jbuilder.key
